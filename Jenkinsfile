@@ -25,6 +25,16 @@ pipeline {
             }
         }
 
+        stage('Login to GHCR') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'GHCR_CREDS', usernameVariable: 'GHCR_USER', passwordVariable: 'GHCR_TOKEN')]) {
+                    sh """
+                        echo $GHCR_TOKEN | docker login ghcr.io -u $GHCR_USER --password-stdin
+                    """
+                }
+            }
+        }
+
         stage('Remove Docker Stack') {
             when {
                 anyOf {
