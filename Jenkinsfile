@@ -1,11 +1,11 @@
-def repoName = 'portainer'
+def repoName = 'rancher'
 
 pipeline {
     agent any
 
     environment {
         STACK_FILE = "stack.yaml"
-        IMAGE_NAME = "portainer/portainer-ce:latest"
+        IMAGE_NAME = "rancher/rancher:latest"
     }
 
     stages {
