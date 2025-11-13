@@ -8,6 +8,8 @@ pipeline {
     environment {
         BRANCH_NAME = "${GIT_BRANCH}"
         GIT_URL = "${GIT_URL}"
+        STACK_FILE = "stack.yaml"   // your stack file
+        IMAGE_NAME = "ghcr.io/port-labs/port-self-hosted-github-app:latest"
     }
 
     stages {
@@ -27,11 +29,18 @@ pipeline {
 
         stage('Login to GHCR') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'GHCR_CREDS', usernameVariable: 'GHCR_USER', passwordVariable: 'GHCR_TOKEN')]) {
+                withCredentials([usernamePassword(credentialsId: 'jenkins-integration', usernameVariable: 'GHCR_USER', passwordVariable: 'GHCR_TOKEN')]) {
                     sh """
                         echo $GHCR_TOKEN | docker login ghcr.io -u $GHCR_USER --password-stdin
                     """
                 }
+            }
+        }
+
+        stage('Pull Docker Image') {
+            steps {
+                echo "Pulling latest image ${IMAGE_NAME}"
+                sh "docker pull ${IMAGE_NAME}"
             }
         }
 
@@ -54,13 +63,14 @@ pipeline {
         stage('Deploy Docker Stack') {
             steps {
                 echo "Deploying Docker Stack ${repoName}"
-                sh "docker stack deploy -c stack.yaml ${repoName}"
+                sh "docker stack deploy -c ${STACK_FILE} ${repoName}"
             }
         }
     }
 
     post {
         always {
+            echo "Cleaning workspace..."
             cleanWs()
         }
     }
