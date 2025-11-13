@@ -12,15 +12,17 @@ services:
       - getport-data:/app/data
     networks:
       - backend-nw
+    ports:
+      - "3000:3000"  # Optional for testing
 
   getport-agent:
     image: ghcr.io/getport-io/agent:latest
     deploy:
-      mode: global   # One agent per Swarm node
+      mode: global
       restart_policy:
         condition: on-failure
     environment:
-      SERVER_URL: "http://getport:3000"
+      SERVER_URL: "http://getport:3000"  # Use "getport" if network is same
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
