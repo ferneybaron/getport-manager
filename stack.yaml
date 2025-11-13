@@ -1,21 +1,24 @@
+version: "3.9"
+
 services:
   port-manager:
-    image: ghcr.io/getport-io/manager:latest
+    image: ghcr.io/port-labs/port-manager:latest   # hypothetical manager image
     deploy:
       replicas: 1
       restart_policy:
         condition: on-failure
     environment:
-      NODE_ENV: production
+      NODE_ENV: "production"
     networks:
       - backend-nw
     volumes:
-      - port-data:/app/data
+      - /var/run/docker.sock:/var/run/docker.sock   # gives access to Docker
+      - port-manager-data:/app/data
     ports:
-      - "3000:3000"  # access via browser
+      - "9000:9000"   # Port.io web UI
 
 volumes:
-  port-data:
+  port-manager-data:
 
 networks:
   backend-nw:
