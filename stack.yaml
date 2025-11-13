@@ -1,26 +1,34 @@
 services:
-
   getport:
-    image: ghcr.io/getport/getport:latest
-    ports:
-      - "9000:9000"        # Web UI
+    image: ghcr.io/getport-io/manager:latest
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+    environment:
+      SERVER_PORT: 3000
+      NODE_ENV: production
     volumes:
-      - getport_data:/app/data
+      - getport-data:/app/data
+    networks:
+      - backend-nw
+
+  getport-agent:
+    image: ghcr.io/getport-io/agent:latest
+    deploy:
+      mode: global   # One agent per Swarm node
+      restart_policy:
+        condition: on-failure
+    environment:
+      SERVER_URL: "http://getport:3000"
+    volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - backend-nw
-    deploy:
-      mode: replicated
-      replicas: 1
-      placement:
-        constraints:
-          - node.role == manager
-      restart_policy:
-        condition: on-failure
+
+volumes:
+  getport-data:
 
 networks:
   backend-nw:
     external: true
-
-volumes:
-  getport_data:
