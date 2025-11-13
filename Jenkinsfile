@@ -1,24 +1,14 @@
-def repoName = 'getport-test'
+def repoName = 'portainer'
 
 pipeline {
     agent any
 
     environment {
         STACK_FILE = "stack.yaml"
-        IMAGE_NAME = "ghcr.io/port-labs/port-self-hosted-github-app:0.16.7"
+        IMAGE_NAME = "portainer/portainer-ce:latest"
     }
 
     stages {
-
-        stage('Login to GHCR') {
-            steps {
-                withCredentials([usernamePassword(credentialsId: 'jenkins-integration', usernameVariable: 'GHCR_USER', passwordVariable: 'GHCR_TOKEN')]) {
-                    sh """
-                        echo \$GHCR_TOKEN | docker login ghcr.io -u \$GHCR_USER --password-stdin
-                    """
-                }
-            }
-        }
 
         stage('Pull Docker Image') {
             steps {
