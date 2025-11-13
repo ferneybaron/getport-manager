@@ -44,7 +44,7 @@ pipeline {
         stage('Deploy Docker Stack') {
             steps {
                 echo "Deploying Docker Stack ${repoName}"
-                sh "docker stack deploy -c getport.yaml ${repoName}"
+                sh "docker stack deploy -c stack.yaml ${repoName}"
             }
         }
     }
