@@ -1,0 +1,26 @@
+services:
+
+  getport:
+    image: ghcr.io/getport/getport:latest
+    ports:
+      - "9000:9000"        # Web UI
+    volumes:
+      - getport_data:/app/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - backend-nw
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      restart_policy:
+        condition: on-failure
+
+networks:
+  backend-nw:
+    external: true
+
+volumes:
+  getport_data:
