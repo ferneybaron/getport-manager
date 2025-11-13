@@ -1,24 +1,21 @@
-version: "3.9"
-
 services:
-  portainer:
-    image: portainer/portainer-ce:latest
+  rancher:
+    image: rancher/rancher:latest
     deploy:
       replicas: 1
       restart_policy:
         condition: on-failure
     ports:
-      - "9000:9000" # Web UI
-      - "9443:9443" # Secure Web UI (HTTPS)
+      - "8181:80"    # HTTP
+      - "8443:443"   # HTTPS
     volumes:
-      - portainer_data:/data
-      - /var/run/docker.sock:/var/run/docker.sock
+      - rancher-data:/var/lib/rancher
     networks:
-      - portainer_network
+      - rancher-network
 
 volumes:
-  portainer_data:
+  rancher-data:
 
 networks:
-  portainer_network:
+  rancher-network:
     driver: overlay
