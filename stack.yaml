@@ -1,6 +1,6 @@
 services:
   rancher:
-    image: rancher/rancher:latest
+    image: rancher/rancher:v2.10.1
     deploy:
       replicas: 1
       restart_policy:
