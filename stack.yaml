@@ -1,9 +1,14 @@
-version: '3.8' # Added back for maximum Swarm stability/feature parsing
+version: '3.8'
 
 services:
   rancher:
-    image: rancher/rancher:v2.10.1
+    image: rancher/rancher:v2.10.1 # Using the last confirmed image
     privileged: true 
+    
+    # === CRITICAL FIX for Ubuntu (AppArmor) ===
+    security_opt:
+      - apparmor:unconfined
+    # ==========================================
     
     deploy:
       replicas: 1
@@ -27,14 +32,13 @@ services:
         mode: ingress
         
     volumes:
-      # This name (rancher-vol) MUST match the name in the 'volumes' section below
-      - rancher-vol:/var/lib/rancher 
+      - rancher-vol:/var/lib/rancher
 
     networks:
       - rancher-nw
 
 volumes:
-  rancher-vol: # <--- FIXED: Must match the name used in the 'volumes' block of the service
+  rancher-vol:
     external: true
     
 networks:
