@@ -1,27 +1,46 @@
 services:
   rancher:
     image: rancher/rancher:v2.10.1
-    container_name: rancher-server # For easier log inspection on the host
+    # container_name: is omitted as it's invalid for Swarm services
     privileged: true 
+    
+    # Swarm Deployment Configuration
     deploy:
       replicas: 1
+      placement:
+        # Optional: Specify a manager node if you want the service to run on a manager
+        constraints:
+          - node.role == manager
       restart_policy:
-        condition: any # Recommended for high availability/resilience
+        condition: any # Restart on failure or normal exit
         delay: 5s 
         max_attempts: 3
+        window: 120s # Wait up to 120s before considering the restart a failure
+
+    # Port Mapping (Access on the Swarm's Ingress Network)
     ports:
-      - "8181:80"    # HTTP
-      - "8443:443"   # HTTPS
+      - target: 80
+        published: 8181
+        protocol: tcp
+        mode: ingress # Standard Swarm ingress routing
+      - target: 443
+        published: 8443
+        protocol: tcp
+        mode: ingress
+        
+    # Persistent Data Volume
     volumes:
-      - rancher-data:/var/lib/rancher
+      - rancher-vol:/var/lib/rancher
+
+    # Dedicated Overlay Network
     networks:
-      - rancher-network
-    # In Swarm, the top-level 'restart' is ignored; 'deploy: restart_policy' is used.
+      - rancher-nw
 
+# External Resources (Must be created before deployment)
 volumes:
-  rancher-data:
-    driver: local
-
+  rancher-vol:
+    external: true
+    
 networks:
-  rancher-network:
-    driver: overlay # Correct for Swarm
+  rancher-nw:
+    external: true
