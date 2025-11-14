@@ -10,25 +10,15 @@ pipeline {
         // Consistent with the image used in the stack.yaml
         IMAGE_NAME = "rancher/rancher:v2.10.1" 
         
-        // Assuming your setup script is named 'setup.sh'
-        SETUP_SCRIPT = "setup.sh" 
+        // SETUP_SCRIPT variable is now removed
     }
 
     stages {
-        
-        stage('Setup Swarm Environment') {
-            steps {
-                echo "Running setup script to create external networks and volumes..."
-                // Execute the setup script before deployment
-                sh "chmod +x ${SETUP_SCRIPT}"
-                sh "./${SETUP_SCRIPT}"
-            }
-        }
-        
+        // The 'Setup Swarm Environment' stage has been removed
+
         stage('Pull Docker Image') {
             steps {
                 echo "Pulling image ${IMAGE_NAME}"
-                // Ensure the correct image is pulled
                 sh "docker pull ${IMAGE_NAME}"
             }
         }
@@ -47,7 +37,7 @@ pipeline {
         stage('Deploy Docker Stack') {
             steps {
                 echo "Deploying Docker Stack ${repoName} using ${STACK_FILE}"
-                // Deploying using the corrected STACK_FILE variable
+                // Deploying using the stack.yaml file
                 sh "docker stack deploy -c ${STACK_FILE} ${repoName}"
             }
         }
